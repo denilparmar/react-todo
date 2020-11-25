@@ -3,39 +3,30 @@ import TodosList from './TodosList';
 import Header from './Header';
 import InputToDo from './InputTodo';
 import { v4 as uuidv4 } from 'uuid';
-
+import axios from 'axios';
 class TodoContainer extends React.Component {
 
+    componentDidMount() {
+        axios.get("https://jsonplaceholder.typicode.com/todos?_limit=10")
+            .then(response => this.setState({todos: response.data}));
+    }
+
     state = {
-        todos: [
-            {
-                id: 1,
-                title: "Setup development environment",
-                completed: false
-            },
-            {
-                id: 2,
-                title: "Develop website and add content",
-                completed: false
-            },
-            {
-                id: 3,
-                title: "Deploy to live server",
-                completed: false
-            }
-        ]
+        todos: [],
+        show: false,
     };
 
     handleChange = id => {
         this.setState({
-          todos: this.state.todos.map(todo => {
-            if (todo.id === id) {
-              todo.completed = !todo.completed;
-            }
-            return todo;
-          })
+            todos: this.state.todos.map(todo => {
+                if (todo.id === id) {
+                    todo.completed = !todo.completed;
+                }
+                return todo;
+            }),
+            show: !this.state.show,
         });
-      };
+    };
 
     deleteToDo = (id) => {
         this.setState({
@@ -61,7 +52,7 @@ class TodoContainer extends React.Component {
     render() {
         return (
             <div className="container">
-                <Header />
+                <Header headerSpan={this.state.show}/>
                 <InputToDo addTodoProps={this.addToDoItem} />
                 <TodosList todos={this.state.todos}
                     handleChangeProps={this.handleChange}
